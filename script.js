@@ -1,23 +1,28 @@
+let dotSpacing = 8;
+let minDotSize = 1;
+let maxDotSize = 6;
+let midDotSize = minDotSize + 0.5 * (maxDotSize - minDotSize);
+let dotSizeRange = 0.5 * (maxDotSize - minDotSize);
 
-let x = 0;
-
-class twoCircles{
-  constructor(xPos,yPos){
-    this.xPos = xPos;
-    this.yPos = yPos;
-  }
-  drawCircles(){
-    circle(this.xPos,this.yPos,20);
-    circle(this.xPos+40,this.yPos,20);
-  }
-}
-
+let circleX = 350;
+let circleY = 350;
+let circleRadius = 100;
 
 function setup() {
-  createCanvas(400, 400);
+  angleMode(DEGREES);
+  createCanvas(700, 700);
 }
 
 function draw() {
   background(255);
-  circle(200,200,100);
+  fill(0);
+  
+  for (let i = 0; i < 700; i += dotSpacing){
+    for (let x = 0; x < 700; x += dotSpacing){
+      let useSize = minDotSize;
+      
+    }
+  }
 }
+
+
