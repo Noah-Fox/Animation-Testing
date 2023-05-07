@@ -25,12 +25,13 @@ function draw() {
   background(255);
 
   push();
+  noFill();
   strokeWeight(1);
 
-  bezier(bob.rightArm.a1x+bob.xPos,bob.rightArm.a1y+bob.yPos,
-    bobA1.rightArm.a1x+bobA1.xPos,bobA1.rightArm.a1y+bobA1.yPos,
-    bobA2.rightArm.a1x+bobA2.xPos,bobA2.rightArm.a1y+bobA2.yPos,
-    bobEnd.rightArm.a1x+bobEnd.xPos,bobEnd.rightArm.a1y+bobEnd.yPos);
+  bezier(bob.rightArm.endX,bob.rightArm.endY,
+    bobA1.rightArm.endX,bobA1.rightArm.endY,
+    bobA2.rightArm.endX,bobA2.rightArm.endY,
+    bobEnd.rightArm.endX,bobEnd.rightArm.endY);
   pop();
   
   if (animating){
@@ -51,7 +52,9 @@ class BallMan{
     this.yPos = 350;
     this.body = {selected: false};
 
+    //body part that is selected
     this.selected = "";
+    //leave limbs in same place when body is moved
     this.anchorLimbsOnMove = true;
 
     this.color = [0,120,0];
@@ -61,22 +64,22 @@ class BallMan{
     this.rightEye = new Eye(-55,40,40,0,5,8);
     this.leftEye = new Eye(-125,40,40,0,5,8);
     
-    this.rightArm = new Limb(0,50,100,150,-100,200,0);
-    this.leftArm = new Limb(180,-50,-100,-150,100,-200,0);
-    this.rightLeg = new Limb(60,20,50,40,180,50,250);
-    this.leftLeg = new Limb(120,-20,50,-40,180,-50,250);
+    this.rightArm = new Limb(0,450,300,500,400,550,350);
+    this.leftArm = new Limb(180,250,400,200,300,150,350);
+    this.rightLeg = new Limb(60,420,500,400,600,400,650);
+    this.leftLeg = new Limb(120,280,500,300,600,300,650);
   }
 
   draw(){
     fill(this.color[0],this.color[1],this.color[2]);
     strokeWeight(2);
     
-    let makeLimbsAnchored = false;
+    let makeLimbsAnchored = true;
     let makeXPos = this.xPos;
     let makeYPos = this.yPos;
     circle(this.xPos,this.yPos,this.bodyWidth);
-    if (this.body.selected && mouseSelected(this.xPos,this.yPos) && this.anchorLimbsOnMove){
-      makeLimbsAnchored = true;
+    if (this.body.selected && mouseSelected(this.xPos,this.yPos) && !this.anchorLimbsOnMove){
+      makeLimbsAnchored = false;
       makeXPos = mouseX;
       makeYPos = mouseY;
     }
@@ -119,48 +122,52 @@ class BallMan{
     let endX = beginX+useLimb.endX;
     let endY = beginY+useLimb.endY;
     bezier(beginX,beginY,
-      a1x,a1y,
-      a2x,a2y,
-      endX,endY);
+      useLimb.a1x,useLimb.a1y,
+      useLimb.a2x,useLimb.a2y,
+      useLimb.endX,useLimb.endY);
     if (useLimb.selected){
       push();
       fill(0);
       strokeWeight(1);
+
       circle(beginX,beginY,5);
       if (mouseSelected(beginX,beginY)){
         let mouseAngle = getAngle(this.xPos,this.yPos,mouseX,mouseY);
         useLimb.angle = mouseAngle;
       }
-      circle(a1x,a1y,5);
-      if (mouseSelected(a1x,a1y)){
-        useLimb.a1x = mouseX-beginX;
-        useLimb.a1y = mouseY-beginY;
-      }
-      line(beginX,beginY,a1x,a1y);
 
-      circle(a2x,a2y,5);
-      if (mouseSelected(a2x,a2y)){
-        useLimb.a2x = mouseX-beginX;
-        useLimb.a2y = mouseY-beginY;
+      circle(useLimb.a1x,useLimb.a1y,5);
+      if (mouseSelected(useLimb.a1x,useLimb.a1y)){
+        useLimb.a1x = mouseX;
+        useLimb.a1y = mouseY;
       }
-      circle(endX,endY,5);
-      if (mouseSelected(endX,endY)){
-        useLimb.endX = mouseX-beginX;
-        useLimb.endY = mouseY-beginY;
+
+      line(beginX,beginY,useLimb.a1x,useLimb.a1y);
+
+      circle(useLimb.a2x,useLimb.a2y,5);
+      if (mouseSelected(useLimb.a2x,useLimb.a2y)){
+        useLimb.a2x = mouseX;
+        useLimb.a2y = mouseY;
       }
-      line(a2x,a2y,endX,endY);
+
+      circle(useLimb.endX,useLimb.endY,5);
+      if (mouseSelected(useLimb.endX,useLimb.endY)){
+        useLimb.endX = mouseX;
+        useLimb.endY = mouseY;
+      }
+      line(useLimb.a2x,useLimb.a2y,useLimb.endX,useLimb.endY);
       pop();
     }
 
-    if (makeAnchored){
+    if (!makeAnchored){
       let shiftX = anchorOnX-this.xPos;
       let shiftY = anchorOnY-this.yPos;
-      useLimb.a1x -= shiftX;
-      useLimb.a1y -= shiftY;
-      useLimb.a2x -= shiftX;
-      useLimb.a2y -= shiftY;
-      useLimb.endX -= shiftX;
-      useLimb.endY -= shiftY;
+      useLimb.a1x += shiftX;
+      useLimb.a1y += shiftY;
+      useLimb.a2x += shiftX;
+      useLimb.a2y += shiftY;
+      useLimb.endX += shiftX;
+      useLimb.endY += shiftY;
     }
   }
 
